@@ -198,7 +198,7 @@ static unsigned char* loadImageIO( const char* filename, int* width, int* height
 	}
 
 	// validate dimensions for sanity
-	printf(LOG_IMAGE "loaded '%s'  (%i x %i, %i channels)\n", filename, imgWidth, imgHeight, imgChannels);
+	//printf(LOG_IMAGE "loaded '%s'  (%i x %i, %i channels)\n", filename, imgWidth, imgHeight, imgChannels);
 
 	if( imgWidth < 0 || imgHeight < 0 || imgChannels < 0 || imgChannels > 4 )
 	{
@@ -328,6 +328,13 @@ bool loadImageRGBA( const char* filename, float4** cpu, float4** gpu, int* width
 	
 	free(img);
 	return true;
+}
+
+
+// loadImageRGBA
+bool loadImageRGBA( const char* filename, float4** ptr, int* width, int* height, const float4& mean )
+{
+	return loadImageRGBA(filename, ptr, ptr, width, height, mean);
 }
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -19,24 +19,34 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-#ifndef __CUDA_NORMALIZE_H__
-#define __CUDA_NORMALIZE_H__
-
-
-#include "cudaUtility.h"
+ 
+#include "glDisplay.h"
+#include "glEvents.h"
 
 
-/**
- * Rebase the pixel intensities of an image between two scales.
- * For example, convert an image with values between `[0,1]` to `[0,255]`
- * @param input_range the range of pixel values of the input image (e.g. `[0,1]`)
- * @param output_range the desired range of pixel values of the output image (e.g. `[0,255]`)
- * @ingroup cuda
- */
-cudaError_t cudaNormalizeRGBA( float4* input,  const float2& input_range,
-						 float4* output, const float2& output_range,
-						 size_t  width,  size_t height );
+// glRegisterEvents
+void glRegisterEvents( glEventHandler callback, void* user, uint32_t displayID )
+{
+	glDisplay* display = glGetDisplay(displayID);
 
-#endif
+	if( display != NULL )
+		display->AddEventHandler(callback, user);
+}
+
+
+// glUnregisterEvents
+void glUnregisterEvents( glEventHandler callback, void* user )
+{
+	const uint32_t numDisplays = glGetNumDisplays();
+
+	for( uint32_t n=0; n < numDisplays; n++ )
+	{
+		glDisplay* display = glGetDisplay(n);
+
+		if( display != NULL )
+			display->RemoveEventHandler(callback, user);
+	}
+}
+
+
 

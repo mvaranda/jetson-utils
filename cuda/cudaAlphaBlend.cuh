@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -20,23 +20,33 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __CUDA_NORMALIZE_H__
-#define __CUDA_NORMALIZE_H__
+#ifndef __CUDA_ALPHA_BLEND_CUH__
+#define __CUDA_ALPHA_BLEND_CUH__
 
 
 #include "cudaUtility.h"
 
 
 /**
- * Rebase the pixel intensities of an image between two scales.
- * For example, convert an image with values between `[0,1]` to `[0,255]`
- * @param input_range the range of pixel values of the input image (e.g. `[0,1]`)
- * @param output_range the desired range of pixel values of the output image (e.g. `[0,255]`)
+ * CUDA device function for alpha blending two pixels.
+ * The alpha blending of the `src` and `dst` pixels is
+ * computed by the equation: `dst * dst.w + src * (1.0 - dst.w)`
+ *
+ * @note cudaAlphaBlend() is for use inside of other CUDA kernels.
  * @ingroup cuda
  */
-cudaError_t cudaNormalizeRGBA( float4* input,  const float2& input_range,
-						 float4* output, const float2& output_range,
-						 size_t  width,  size_t height );
+__device__ inline float4 cudaAlphaBlend( const float4& src, const float4& dst )
+{
+	const float alph = dst.w / 255.0f;
+	const float inva = 1.0f - alph;
+
+	return make_float4(alph * dst.x + inva * src.x,
+				    alph * dst.y + inva * src.y,
+				    alph * dst.z + inva * src.z,
+				    255.0f);
+}
+
 
 #endif
+
 

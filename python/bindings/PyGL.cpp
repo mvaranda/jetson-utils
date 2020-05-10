@@ -58,18 +58,20 @@ static int PyDisplay_Init( PyDisplay_Object* self, PyObject *args, PyObject *kwd
 	printf(LOG_PY_UTILS "PyDisplay_Init()\n");
 	
 	// parse arguments
+	int width = -1;
+	int height = -1;
 	float bg_color[] = { 0.05f, 0.05f, 0.05f, 1.0f };
 	const char* title = glDisplay::DEFAULT_TITLE;
-	static char* kwlist[] = {"title", "r", "g", "b", "a", NULL};
+	static char* kwlist[] = {"title", "width", "height", "r", "g", "b", "a", NULL};
 
-	if( !PyArg_ParseTupleAndKeywords(args, kwds, "|sffff", kwlist, &title, &bg_color[0], &bg_color[1], &bg_color[2], &bg_color[3]))
+	if( !PyArg_ParseTupleAndKeywords(args, kwds, "|siiffff", kwlist, &title, &width, &height, &bg_color[0], &bg_color[1], &bg_color[2], &bg_color[3]))
 	{
 		PyErr_SetString(PyExc_Exception, LOG_PY_UTILS "glDisplay.__init()__ failed to parse args tuple");
 		return -1;
 	}
   
 	// create the display object
-	glDisplay* display = glDisplay::Create(title, bg_color[0], bg_color[1], bg_color[2], bg_color[3]);
+	glDisplay* display = glDisplay::Create(title, width, height, bg_color[0], bg_color[1], bg_color[2], bg_color[3]);
 
 	if( !display )
 	{
@@ -353,8 +355,8 @@ static PyObject* PyDisplay_IsClosed( PyDisplay_Object* self )
 }
 
 
-// UserEvents
-static PyObject* PyDisplay_UserEvents( PyDisplay_Object* self )
+// ProcessEvents
+static PyObject* PyDisplay_ProcessEvents( PyDisplay_Object* self )
 {
 	if( !self || !self->display )
 	{
@@ -362,7 +364,7 @@ static PyObject* PyDisplay_UserEvents( PyDisplay_Object* self )
 		return NULL;
 	}
 
-	self->display->UserEvents();
+	self->display->ProcessEvents();
 	Py_RETURN_NONE; 
 }
 
@@ -387,7 +389,7 @@ static PyMethodDef PyDisplay_Methods[] =
 	{ "IsClosed", (PyCFunction)PyDisplay_IsClosed, METH_NOARGS, "Returns true if the window has been closed"},
 	{ "SetBackgroundColor", (PyCFunction)PyDisplay_SetBackgroundColor, METH_VARARGS|METH_KEYWORDS, "Set the window background color"},
 	{ "SetTitle", (PyCFunction)PyDisplay_SetTitle, METH_VARARGS, "Set the window title string"},
-	{ "UserEvents", (PyCFunction)PyDisplay_UserEvents, METH_NOARGS, "Process UI events"},
+	{ "ProcessEvents", (PyCFunction)PyDisplay_ProcessEvents, METH_NOARGS, "Process UI events"},
 	{NULL}  /* Sentinel */
 };
 

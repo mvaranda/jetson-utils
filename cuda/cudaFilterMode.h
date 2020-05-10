@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -20,23 +20,52 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __CUDA_NORMALIZE_H__
-#define __CUDA_NORMALIZE_H__
+#ifndef __CUDA_FILTER_MODE_H__
+#define __CUDA_FILTER_MODE_H__
 
 
 #include "cudaUtility.h"
 
 
 /**
- * Rebase the pixel intensities of an image between two scales.
- * For example, convert an image with values between `[0,1]` to `[0,255]`
- * @param input_range the range of pixel values of the input image (e.g. `[0,1]`)
- * @param output_range the desired range of pixel values of the output image (e.g. `[0,255]`)
+ * Enumeration of interpolation filtering modes.
+ * @see cudaFilterModeFromStr() and cudaFilterModeToStr()
  * @ingroup cuda
  */
-cudaError_t cudaNormalizeRGBA( float4* input,  const float2& input_range,
-						 float4* output, const float2& output_range,
-						 size_t  width,  size_t height );
+enum cudaFilterMode
+{
+	FILTER_POINT,	 /**< Nearest-neighbor sampling */
+	FILTER_LINEAR	 /**< Bilinear filtering */
+};
 
+/**
+ * Parse a cudaFilterMode enum from a string.
+ * @returns The parsed cudaFilterMode, or default_value on error.
+ * @ingroup cuda
+ */
+cudaFilterMode cudaFilterModeFromStr( const char* filter, cudaFilterMode default_value=FILTER_LINEAR );
+
+/**
+ * Convert a cudaFilterMode enum to a string.
+ * @ingroup cuda
+ */
+const char* cudaFilterModeToStr( cudaFilterMode filter );
+
+
+/**
+ * Enumeration of image layout formats.
+ * @ingroup cuda
+ */
+enum cudaDataFormat
+{
+	FORMAT_HWC,	/**< Height * Width * Channels (packed format) */
+	FORMAT_CHW,	/**< Channels * Width * Height (DNN format) */
+	
+	/**< Default format (HWC) */
+	FORMAT_DEFAULT = FORMAT_HWC
+};
+
+						
 #endif
+
 
