@@ -35,7 +35,8 @@
 
 #define LOG_IMAGE "[image] "
 
-
+// MV: test
+//
 // limit_pixel
 static inline unsigned char limit_pixel( float pixel, float max_pixel )
 {
